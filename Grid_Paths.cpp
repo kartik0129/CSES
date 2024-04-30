@@ -1,97 +1,132 @@
-#include<bits/stdc++.h>
-#include<ext/pb_ds/assoc_container.hpp>
-#include<ext/pb_ds/tree_policy.hpp>
-
+// C++ Code
+#include <bits/stdc++.h>
 using namespace std;
-using namespace __gnu_pbds;
 
-#define fastio() ios_base::sync_with_stdio(false);cin.tie(NULL);cout.tie(NULL)
-#define MOD 1000000007
-#define MOD1 998244353
-#define ll long long
-#define int ll
-#define ld long double
-#define INF 1e18
-#define nline '\n'
-#define pb push_back
-#define ppb pop_back
-#define mp make_pair
-#define ff first
-#define ss second
-#define fo(i,a,b) for(int i = a; i < b ; i ++)
-#define PI 3.141592653589793238462
-#define set_bits __builtin_popcountll
-#define sz(x) ((int)(x).size())
-#define all(x) (x).begin(), (x).end()
-typedef pair<int, int> pii;
-typedef vector<int> vi;
-typedef vector<string> vst;
-typedef vector<pii> vpii;
-typedef vector<vi> vvi;
-typedef unsigned long long ull;
-typedef long double lld;
-typedef tree<int, null_type, less<int>, rb_tree_tag, tree_order_statistics_node_update> pbds; // find_by_order, order_of_key
-#ifndef ONLINE_JUDGE
-#define debug(x) cerr << #x <<" "; _print(x); cerr << endl;
-#else
-#define debug(x)
-#endif
-void _print(int t) {cerr << t;}
-void _print(string t) {cerr << t;}
-void _print(char t) {cerr << t;}
-void _print(lld t) {cerr << t;}
-void _print(double t) {cerr << t;}
-void _print(ull t) {cerr << t;}
-template <class T, class V> void _print(pair <T, V> p);
-template <class T> void _print(vector <T> v);
-template <class T> void _print(set <T> v);
-template <class T, class V> void _print(map <T, V> v);
-template <class T> void _print(multiset <T> v);
-template <class T, class V> void _print(pair <T, V> p) {cerr << "{"; _print(p.ff); cerr << ","; _print(p.ss); cerr << "}";}
-template <class T> void _print(vector <T> v) {cerr << "[ "; for (T i : v) {_print(i); cerr << " ";} cerr << "]";}
-template <class T> void _print(set <T> v) {cerr << "[ "; for (T i : v) {_print(i); cerr << " ";} cerr << "]";}
-template <class T> void _print(multiset <T> v) {cerr << "[ "; for (T i : v) {_print(i); cerr << " ";} cerr << "]";}
-template <class T, class V> void _print(map <T, V> v) {cerr << "[ "; for (auto i : v) {_print(i); cerr << " ";} cerr << "]";}
-int cnt=0;
-void helper(string &s,int index,int x,int y,vector<vector<int>> &vis){
-    if(x<0 || y<0 || x>=7 || y>=7 || vis[x][y]==1)return ;
-    cout<<x<<' '<<y<<' '<<index<<endl;
-    if(index==s.size() ){cout<<x<<' '<<y<<endl;return ;}
-    if(s[index]!='?'){
-        vis[x][y]=1;
-        if(s[index]=='R')helper(s,index+1,x,y+1,vis);
-        else if(s[index]=='L')helper(s,index+1,x,y-1,vis);
-        else if(s[index]=='U')helper(s,index+1,x-1,y,vis);
-        else helper(s,index+1,x+1,y,vis);
-    }
-    else{
-        vis[x][y]=1;
-        helper(s,index+1,x,y+1,vis);
-        helper(s,index+1,x,y-1,vis);
-        helper(s,index+1,x-1,y,vis);
-        helper(s,index+1,x+1,y,vis);
-    }
-}
-void solve()
+// Macro to check if a coordinate is valid in the grid
+#define isValid(a) (a >= 0 && a < 7 ? 1 : 0)
+
+// Direction constants
+#define right 0
+#define left 1
+#define down 2
+#define up 3
+
+// Direction vectors for right, left, down, and up
+int dx[4] = { 0, 0, 1, -1 };
+int dy[4] = { 1, -1, 0, 0 };
+
+// The path description string
+string str;
+int vis[7][7];
+
+// Function to count the number of paths that match the
+// description
+int countPaths(int x, int y, int pos)
 {
-    string s;
-    cnt=0;
-    cin>>s;
-    vector<vector<int>> vis(7,vector<int>(7,0));
-    helper(s,0,0,0,vis);
-    cout<<cnt<<endl;
+    // If we have processed all characters in the string and
+    // we are at the lower-left square, return 1
+    if (pos == (int)str.length())
+        return (x == 6 && y == 0);
 
+    // If we have reached the lower-left square before
+    // processing all characters, return 0
+    if (x == 6 && y == 0)
+        return 0;
+
+    // If the current cell is already visited, return 0
+    if (vis[x][y])
+        return 0;
+
+    // Array to keep track of the visited status of the
+    // neighboring cells
+    vector<bool> visited(4, -1);
+    for (int k = 0; k < 4; k++)
+        if (isValid(x + dx[k]) && isValid(y + dy[k]))
+            visited[k] = vis[x + dx[k]][y + dy[k]];
+
+    // If we are at a position such that the up and down
+    // squares are unvisited and the left and right squares
+    // are visited return 0
+    if (!visited[down] && !visited[up] && visited[right]
+        && visited[left])
+        return 0;
+
+    // If we are at a position such that the left and right
+    // squares are unvisited and the up and down squares are
+    // visited return 0
+    if (!visited[right] && !visited[left] && visited[down]
+        && visited[up])
+        return 0;
+
+    // If we are at a position such that the upper-right
+    // diagonal square is visited and the up and right
+    // squares are unvisited return 0
+    if (isValid(x - 1) && isValid(y + 1)
+        && vis[x - 1][y + 1] == 1)
+        if (!visited[right] && !visited[up])
+            return 0;
+
+    // If we are at a position such that the lower-right
+    // diagonal square is visited and the down and right
+    // squares are unvisited return 0
+    if (isValid(x + 1) && isValid(y + 1)
+        && vis[x + 1][y + 1] == 1)
+        if (!visited[right] && !visited[down])
+            return 0;
+
+    // If we are at a position such that the upper-left
+    // diagonal square is visited and the up and left
+    // squares are unvisited return 0
+    if (isValid(x - 1) && isValid(y - 1)
+        && vis[x - 1][y - 1] == 1)
+        if (!visited[left] && !visited[up])
+            return 0;
+
+    // If we are at a position such that the lower-left diagonal
+    // square is visited and the down and right squares are
+    // unvisited return 0
+    if (isValid(x + 1) && isValid(y - 1)
+        && vis[x + 1][y - 1] == 1)
+        if (!visited[left] && !visited[down])
+            return 0;
+
+    // Mark the current cell as visited
+    vis[x][y] = 1;
+
+    // Variable to store the number of paths
+    int numberOfPaths = 0;
+
+    // If the current character is '?', try all four
+    // directions
+    if (str[pos] == '?') {
+        for (int k = 0; k < 4; k++)
+            if (isValid(x + dx[k]) && isValid(y + dy[k]))
+                numberOfPaths += countPaths(
+                    x + dx[k], y + dy[k], pos + 1);
+    }
+
+    // If the current character is a direction, go in that
+    // direction
+    else if (str[pos] == 'R' && y + 1 < 7)
+        numberOfPaths += countPaths(x, y + 1, pos + 1);
+    else if (str[pos] == 'L' && y - 1 >= 0)
+        numberOfPaths += countPaths(x, y - 1, pos + 1);
+    else if (str[pos] == 'U' && x - 1 >= 0)
+        numberOfPaths += countPaths(x - 1, y, pos + 1);
+    else if (str[pos] == 'D' && x + 1 < 7)
+        numberOfPaths += countPaths(x + 1, y, pos + 1);
+
+    // Unmark the current cell
+    vis[x][y] = 0;
+
+    // Return the number of paths
+    return numberOfPaths;
 }
 
-signed main() 
+// Driver Code
+int main()
 {
-#ifndef ONLINE_JUDGE
-    freopen("Error.txt", "w", stderr);
-#endif
-    fastio();
-    int tc = 1;
-    fo(i, 1, tc + 1)
-    {
-        solve();
-    }
+    // Example 1:
+   cin>>str;
+    cout << countPaths(0, 0, 0) << endl;
 }
