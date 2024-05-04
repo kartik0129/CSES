@@ -55,26 +55,17 @@ template <class T, class V> void _print(map <T, V> v) {cerr << "[ "; for (auto i
 
 void solve()
 {
-    int n,x;
-    cin>>n>>x;
-    vector<pair<int,int>> vec(n);
-    fo(i,0,n){
-        int y;
-        cin>>y;
-        vec[i] = {y,i};
-    }
+    int n;
+    cin>>n;
+    vector<int> vec(n);
+    fo(i,0,n)cin>>vec[i];
     sort(vec.begin(),vec.end());
-    int i=0,j=n-1;
-    while(i<j && i<n && j>=0){
-        int sum = vec[i].first+vec[j].first;
-        if(sum==x){
-            cout<<vec[i].second+1<<' '<<vec[j].second+1<<endl;
-            return ;
-        }
-        else if(sum>x)j--;
-        else i++;
-    }
-    cout<<"IMPOSSIBLE"<<endl;
+    int median = 0;
+    if(n%2)median = vec[n/2];
+    else median = (vec[n/2 -1] + vec[n/2])/2;
+    int ans = 0;
+    fo(i,0,n)ans+=abs(median - vec[i]);
+    cout<<ans<<endl;
 }
 
 signed main() 
