@@ -6,7 +6,6 @@ using namespace std;
 using namespace __gnu_pbds;
 
 #define fastio() ios_base::sync_with_stdio(false);cin.tie(NULL);cout.tie(NULL)
-
 #define MOD 1000000007
 #define MOD1 998244353
 #define ll long long
@@ -31,7 +30,7 @@ typedef vector<pii> vpii;
 typedef vector<vi> vvi;
 typedef unsigned long long ull;
 typedef long double lld;
-typedef tree<pair<int,int>, null_type, less<pair<int,int>>, rb_tree_tag, tree_order_statistics_node_update> pbds; // find_by_order, order_of_key
+typedef tree<int, null_type, less<int>, rb_tree_tag, tree_order_statistics_node_update> pbds; // find_by_order, order_of_key
 #ifndef ONLINE_JUDGE
 #define debug(x) cerr << #x <<" "; _print(x); cerr << endl;
 #else
@@ -53,8 +52,9 @@ template <class T> void _print(vector <T> v) {cerr << "[ "; for (T i : v) {_prin
 template <class T> void _print(set <T> v) {cerr << "[ "; for (T i : v) {_print(i); cerr << " ";} cerr << "]";}
 template <class T> void _print(multiset <T> v) {cerr << "[ "; for (T i : v) {_print(i); cerr << " ";} cerr << "]";}
 template <class T, class V> void _print(map <T, V> v) {cerr << "[ "; for (auto i : v) {_print(i); cerr << " ";} cerr << "]";}
+
 bool cmp(pair<pair<int,int>,int> &a, pair<pair<int,int>,int> &b){
-    if(a.first.first==b.first.first)return a.first.second>b.first.second;
+    if(a.first.first==b.first.first)return a.first.second<b.first.second;
     return a.first.first<b.first.first;
 }
 void solve()
@@ -68,26 +68,29 @@ void solve()
         vec[i] = {{a,b},i};
     }
     sort(vec.begin(),vec.end(),cmp);
-    vector<int> isContaining(n,0),isContained(n,0);
-    pbds prevEnds;
-    for(int i=n-1;i>=0;i--){
-        pair<pair<int,int>,int> p = vec[i];
-        isContaining[p.second] = prevEnds.order_of_key({p.first.second,n});
-        prevEnds.insert({p.first.second,p.second});
+   // fo(i,0,n)cout<<vec[i].first.first<<' '<<vec[i].first.second<<endl;
+    priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq;
+    int cnt=1;
+    vector<int> ans(n);
+    ans[vec[0].second] = cnt;
+    int depTime = vec[0].first.second;
+    pq.push({depTime,cnt});
+    fo(i,1,n){
+        //cout<<pq.top().first<<' '<<pq.top().second<<endl;
+        if(vec[i].first.first>pq.top().first){
+            ans[vec[i].second] = pq.top().second;
+            pq.pop();
+            pq.push({vec[i].first.second,ans[vec[i].second]});
+        }
+        else{
+            cnt++;
+            ans[vec[i].second] = cnt;
+            pq.push({vec[i].first.second,cnt});
+        }
     }
-
-    prevEnds.clear();
-    for(int i=0;i<n;i++){
-        pair<pair<int,int>,int> p = vec[i];
-        isContained[p.second] = prevEnds.size()-prevEnds.order_of_key({p.first.second,-1});
-        prevEnds.insert({p.first.second,p.second});
-    }
-
-    fo(i,0,n)cout<<isContaining[i]<<' ';
+    cout<<cnt<<endl;
+    fo(i,0,n)cout<<ans[i]<<' ';
     cout<<endl;
-    fo(i,0,n)cout<<isContained[i]<<' ';
-    cout<<endl;
-    
 }
 
 signed main() 
