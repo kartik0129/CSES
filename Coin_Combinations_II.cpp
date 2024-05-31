@@ -55,33 +55,18 @@ template <class T, class V> void _print(map <T, V> v) {cerr << "[ "; for (auto i
 
 void solve()
 {
-    int n;
-    cin >> n;
-    vector<int> vec(32, 0);
-    fo(i,0,32){
-        vec[i] = n % 2;
-        n /= 2;
+    int n, x;
+    cin >> n >> x;
+    vector<int> vec(n);
+    fo(i, 0, n) cin >> vec[i];
+    vector<int> dp(x + 1, 0);
+    dp[0] = 1;
+    for(int i = 0; i < n;i++){
+        for (int j = vec[i]; j <= x;j++){
+            dp[j] =(dp[j]+ dp[j - vec[i]])%MOD;
+        }
     }
-    for (int i = 0, j; i < 32;)
-    {
-        if(vec[i]==0){
-            i++;
-            continue;
-        }
-        j = i + 1;
-        while(vec[j]){
-            vec[j] = 0;
-            j++;
-        }
-        if(j>i+1){
-            vec[j] = 1;
-            vec[i] = -1;
-        }
-        i = j;
-    }
-    cout << 32 << endl;
-    fo(i, 0, 32) cout << vec[i] << ' ';
-    cout << endl;
+    cout << dp[x] << endl;
 }
 
 signed main() 
@@ -91,7 +76,6 @@ signed main()
 #endif
     fastio();
     int tc = 1;
-    cin >> tc;
     fo(i, 1, tc + 1)
     {
         solve();
