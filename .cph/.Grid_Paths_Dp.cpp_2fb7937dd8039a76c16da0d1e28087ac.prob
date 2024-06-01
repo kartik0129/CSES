@@ -1,0 +1,1 @@
+{"name":"Local: Grid_Paths_Dp","url":"/Users/kartik/Documents/CSES/Grid_Paths_Dp.cpp","tests":[{"id":1717249794738,"input":"4\n....\n.*..\n...*\n*...","output":"3"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"/Users/kartik/Documents/CSES/Grid_Paths_Dp.cpp","group":"local","local":true}
