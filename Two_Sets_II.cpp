@@ -52,24 +52,30 @@ template <class T> void _print(vector <T> v) {cerr << "[ "; for (T i : v) {_prin
 template <class T> void _print(set <T> v) {cerr << "[ "; for (T i : v) {_print(i); cerr << " ";} cerr << "]";}
 template <class T> void _print(multiset <T> v) {cerr << "[ "; for (T i : v) {_print(i); cerr << " ";} cerr << "]";}
 template <class T, class V> void _print(map <T, V> v) {cerr << "[ "; for (auto i : v) {_print(i); cerr << " ";} cerr << "]";}
-
+int helper(int ind, int sum, int n, vector<vector<int>> &dp){
+    if(ind<=n && sum==0){
+        return 1;
+    }
+    if(ind>n || sum<0)
+        return 0;
+    if(dp[ind][sum]!=-1)
+        return dp[ind][sum];
+    int take = helper(ind + 1, sum - ind, n, dp);
+    int notTake = helper(ind + 1, sum, n, dp);
+    return dp[ind][sum] = (take + notTake)%MOD;
+}
 void solve()
 {
     int n;
     cin >> n;
-    vector<int> vec(n);
-    int sum = 0;
-    fo(i, 0, n) cin >> vec[i], sum += vec[i];
-    int dp[n][n];
-    for (int l = n - 1; l >= 0;l--){
-        for (int h = l; h < n;h++){
-            if(l==h)
-                dp[l][h] = vec[l];
-            else
-                dp[l][h] = max(vec[l] - dp[l + 1][h], vec[h] - dp[l][h - 1]);
-        }
+    int sum = (n * (n + 1)) / 2;
+    if(sum%2){
+        cout << 0 << endl;
+        return;
     }
-    cout<<(dp[0][n-1]+sum)/2<<endl;
+    vector<vector<int>> dp(n + 1, vector<int>(sum / 2+1, -1));
+    helper(1, sum / 2, n, dp);
+    cout << dp[1][sum / 2] << endl;
 }
 
 signed main() 
