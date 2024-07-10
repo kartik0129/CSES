@@ -53,33 +53,58 @@ template <class T> void _print(set <T> v) {cerr << "[ "; for (T i : v) {_print(i
 template <class T> void _print(multiset <T> v) {cerr << "[ "; for (T i : v) {_print(i); cerr << " ";} cerr << "]";}
 template <class T, class V> void _print(map <T, V> v) {cerr << "[ "; for (auto i : v) {_print(i); cerr << " ";} cerr << "]";}
 
+void mark_dfs(int node, vector<int> &vis, vector<vector<int>> &adj){
+    vis[node]=1;
+    for(auto it:adj[node]){
+        if(!vis[it]){
+            mark_dfs(it, vis, adj);
+        }
+    }
+}
+int dfs(int node, vector<int> &dp, vector<int> &child, vector<vector<int>> &adj,int n){
+    if(node==n)
+        return dp[node] = 1;
+    if(dp[node]!=-1)
+        return dp[node];
+    int len = 0;
+    for(auto it:adj[node]){
+        int tmp = dfs(it, dp, child, adj, n);
+        int tmp_len = tmp == 0 ? 0 : 1 + tmp;
+        if(tmp_len>len){
+            child[node] = it;
+            len = tmp_len;
+        }
+    }
+    return dp[node] = len;
+}
 void solve()
 {
-    int n, m, k;
-    cin >> n >> m >> k;
-    vector<vector<pair<int, int>>> adj(n+1);
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> adj(n + 1);
     fo(i,0,m){
-        int u, v, c;
-        cin >> u >> v >> c;
-        adj[u].push_back({v, c});
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
     }
-    priority_queue<pair<int, int>> pq;
-    pq.push({0, 1});
+    vector<int> dp(n + 1, -1);
+    vector<int> child(n + 1, 0);
     vector<int> vis(n + 1, 0);
-    while(pq.size() && vis[n]<k){
-        int a = pq.top().second;
-        int d = pq.top().first;
-        pq.pop();
-        vis[a]++;
-        if(a==n){
-            cout << -d << ' ';
-        }
-        if(vis[a]<=k){
-            for(auto [b,w]:adj[a]){
-                pq.push({d - w, b});
-            }
-        }
+    mark_dfs(1, vis, adj);
+    if(!vis[n])
+      {  cout << "IMPOSSIBLE" << endl;
+          return;
+      }
+    int ans = dfs(1, dp, child, adj, n);
+    vector<int> anss;
+    int start = 1;
+    while(start){
+        anss.push_back(start);
+        start = child[start];
     }
+    cout << anss.size() << endl;
+    fo(i, 0, anss.size()) cout << anss[i] << ' ';
+    cout << endl;
 }
 
 signed main() 
